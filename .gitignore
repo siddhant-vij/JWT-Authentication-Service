@@ -34,3 +34,8 @@ go.work
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Project Specific
+.env
+.air.toml
+tmp/*
