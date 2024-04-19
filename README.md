@@ -1,6 +1,6 @@
 ## JWT Authentication Service
 
-Building the authentication service for the RSS Feed Aggregator project. It's a JWT-based authentication server which uses a JSON file (for Session Store), integrated with the backend API and the frontend UI which allows a user to:
+Building the authentication service for the RSS Feed Aggregator project. It's a JWT-based authentication server which uses Redis (for Session Store), integrated with the backend API and the frontend UI which allows a user to:
 - Follow 5 RSS feeds by default (on successful login)
 - Follow and unfollow RSS feeds that other users have added
 - Fetch all of the latest posts from the RSS feeds they follow
@@ -35,3 +35,9 @@ RSS feeds are a way for websites to publish updates to their content. You can us
 - Add integration tests that use the API to create, read, update, and delete feeds and posts
 - Add bookmarking or "liking" to posts
 - Create a comprehensive web UI that uses the backend API
+
+<br>
+
+### License
+
+Distributed under the MIT License. See [`LICENSE`](https://github.com/siddhant-vij/JWT-Authentication-Service/blob/main/LICENSE) for more information.
