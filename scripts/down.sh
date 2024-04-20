@@ -2,4 +2,4 @@
 
 source ../.env
 cd ../sql/schema
-goose postgres "$DATABASE_URL" up
+goose postgres "$DATABASE_URL" down
