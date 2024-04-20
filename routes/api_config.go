@@ -1,5 +1,9 @@
 package routes
 
+import (
+	"github.com/siddhant-vij/JWT-Authentication-Service/database"
+)
+
 type ApiConfig struct {
 	PostgresHost     string
 	PostgresPort     string
@@ -24,4 +28,6 @@ type ApiConfig struct {
 	RefreshTokenPublicKey  string
 	RefreshTokenExpiredIn  string
 	RefreshTokenMaxAge     int
+
+	DBQueries *database.Queries
 }
