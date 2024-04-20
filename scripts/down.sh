@@ -1,5 +1,5 @@
 #!/bin/bash
 
+source ../.env
 cd ../sql/schema
-
-goose postgres "postgres://postgres:admin@localhost:5432/test?sslmode=disable" down
+goose postgres "$DATABASE_URL" up

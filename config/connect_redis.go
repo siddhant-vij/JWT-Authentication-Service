@@ -1,1 +1,1 @@
-package initializers
+package config

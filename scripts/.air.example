@@ -1,10 +1,10 @@
-root = "."
+root = ".."
 tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./tmp/main"
-  cmd = "go build -o ./tmp/main.exe cmd/main.go"
+  bin = "../tmp/AuthServer.exe"
+  cmd = "go build -o ../tmp/AuthServer.exe ../cmd/main.go"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "frontend/node_modules"]
   exclude_file = []
