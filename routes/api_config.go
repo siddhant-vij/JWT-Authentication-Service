@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"github.com/redis/go-redis/v9"
+	
 	"github.com/siddhant-vij/JWT-Authentication-Service/database"
 )
 
@@ -30,4 +32,5 @@ type ApiConfig struct {
 	RefreshTokenMaxAge     int
 
 	DBQueries *database.Queries
+	RedisClient *redis.Client
 }

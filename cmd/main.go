@@ -4,11 +4,8 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/siddhant-vij/JWT-Authentication-Service/config"
-	"github.com/siddhant-vij/JWT-Authentication-Service/database"
 	"github.com/siddhant-vij/JWT-Authentication-Service/routes"
 	"github.com/siddhant-vij/JWT-Authentication-Service/utils"
 )
@@ -18,36 +15,29 @@ var apiConfig *routes.ApiConfig = &routes.ApiConfig{}
 func init() {
 	config.LoadEnv(apiConfig)
 	config.ConnectDB(apiConfig)
+	config.ConnectRedis(apiConfig)
 }
 
 func insertData() {
-	user := database.InsertUserParams{
-		ID:           uuid.New(),
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
-		Email:        "temp@example.com",
-		PasswordHash: "password123",
-	}
-	apiConfig.DBQueries.InsertUser(context.TODO(), user)
+	key := "key"
+	value := "value"
+
+	apiConfig.RedisClient.Set(context.TODO(), key, value, 0)
 }
 
 func getData(w http.ResponseWriter, r *http.Request) {
 	insertData()
 
-	credentials := database.GetUserByCredentialsParams{
-		Email:        "temp@example.com",
-		PasswordHash: "password123",
-	}
-	user, err := apiConfig.DBQueries.GetUserByCredentials(context.TODO(), credentials)
+	value, err := apiConfig.RedisClient.Get(context.TODO(), "key").Result()
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.RespondWithJSON(w, http.StatusOK, user)
+	utils.RespondWithJSON(w, http.StatusOK, value)
 }
 
 func main() {
-	http.HandleFunc("/api/db/get", getData)
+	http.HandleFunc("/api/redis/get", getData)
 
 	serverAddr := "localhost:" + apiConfig.Port
 	log.Fatal(http.ListenAndServe(serverAddr, nil))
