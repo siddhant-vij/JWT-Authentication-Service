@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 
@@ -30,13 +31,13 @@ func LoadEnv(config *routes.ApiConfig) {
 
 	config.RedisUrl = os.Getenv("REDIS_URL")
 
-	config.AccessTokenPrivateKey = os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
-	config.AccessTokenPublicKey = os.Getenv("ACCESS_TOKEN_PUBLIC_KEY")
-	config.AccessTokenExpiredIn = os.Getenv("ACCESS_TOKEN_EXPIRED_IN")
+	config.AccessTokenKey = os.Getenv("ACCESS_TOKEN_KEY")
+	at_expiry_minutes, _ := strconv.Atoi(os.Getenv("ACCESS_TOKEN_EXPIRES_IN"))
+	config.AccessTokenExpiresIn = time.Duration(at_expiry_minutes) * time.Minute
 	config.AccessTokenMaxAge, _ = strconv.Atoi(os.Getenv("ACCESS_TOKEN_MAX_AGE"))
 
-	config.RefreshTokenPrivateKey = os.Getenv("REFRESH_TOKEN_PRIVATE_KEY")
-	config.RefreshTokenPublicKey = os.Getenv("REFRESH_TOKEN_PUBLIC_KEY")
-	config.RefreshTokenExpiredIn = os.Getenv("REFRESH_TOKEN_EXPIRED_IN")
+	config.RefreshTokenKey = os.Getenv("REFRESH_TOKEN_KEY")
+	rt_expiry_minutes, _ := strconv.Atoi(os.Getenv("REFRESH_TOKEN_EXPIRES_IN"))
+	config.RefreshTokenExpiresIn = time.Duration(rt_expiry_minutes) * time.Minute
 	config.RefreshTokenMaxAge, _ = strconv.Atoi(os.Getenv("REFRESH_TOKEN_MAX_AGE"))
 }

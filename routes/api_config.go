@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/redis/go-redis/v9"
-	
+
 	"github.com/siddhant-vij/JWT-Authentication-Service/database"
 )
 
@@ -21,16 +23,14 @@ type ApiConfig struct {
 
 	RedisUrl string
 
-	AccessTokenPrivateKey string
-	AccessTokenPublicKey  string
-	AccessTokenExpiredIn  string
-	AccessTokenMaxAge     int
+	AccessTokenKey       string
+	AccessTokenExpiresIn time.Duration
+	AccessTokenMaxAge    int
 
-	RefreshTokenPrivateKey string
-	RefreshTokenPublicKey  string
-	RefreshTokenExpiredIn  string
-	RefreshTokenMaxAge     int
+	RefreshTokenKey       string
+	RefreshTokenExpiresIn time.Duration
+	RefreshTokenMaxAge    int
 
-	DBQueries *database.Queries
+	DBQueries   *database.Queries
 	RedisClient *redis.Client
 }
