@@ -1,44 +1,45 @@
 package main
 
 import (
-	"context"
-	"log"
-	"net/http"
+	"fmt"
+	// "log"
+	// "net/http"
 
-	"github.com/siddhant-vij/JWT-Authentication-Service/config"
-	"github.com/siddhant-vij/JWT-Authentication-Service/routes"
+	// "github.com/siddhant-vij/JWT-Authentication-Service/config"
+	// "github.com/siddhant-vij/JWT-Authentication-Service/routes"
 	"github.com/siddhant-vij/JWT-Authentication-Service/utils"
 )
 
-var apiConfig *routes.ApiConfig = &routes.ApiConfig{}
+// var apiConfig *routes.ApiConfig = &routes.ApiConfig{}
 
-func init() {
-	config.LoadEnv(apiConfig)
-	config.ConnectDB(apiConfig)
-	config.ConnectRedis(apiConfig)
-}
-
-func insertData() {
-	key := "key"
-	value := "value"
-
-	apiConfig.RedisClient.Set(context.TODO(), key, value, 0)
-}
-
-func getData(w http.ResponseWriter, r *http.Request) {
-	insertData()
-
-	value, err := apiConfig.RedisClient.Get(context.TODO(), "key").Result()
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	utils.RespondWithJSON(w, http.StatusOK, value)
-}
+// func init() {
+// 	config.LoadEnv(apiConfig)
+// 	config.ConnectDB(apiConfig)
+// 	config.ConnectRedis(apiConfig)
+// }
 
 func main() {
-	http.HandleFunc("/api/redis/get", getData)
+	pwd := "jwt-auth-service"
+	encPwd := utils.EncryptPassword(pwd)
+	fmt.Println("Encrypted Password: ", encPwd)
+	// Unique on each run: salt (hashing)
 
-	serverAddr := "localhost:" + apiConfig.Port
-	log.Fatal(http.ListenAndServe(serverAddr, nil))
+	userInputPwd1 := "temp-password"
+	fmt.Println(utils.ComparePassword(encPwd, userInputPwd1))
+	// false
+
+	userInputPwd2 := "jwt-auth-service"
+	fmt.Println(utils.ComparePassword(encPwd, userInputPwd2))
+	// true
+
+	userInputPwd3 := "jwt_auth_service"
+	fmt.Println(utils.ComparePassword(encPwd, userInputPwd3))
+	// false
+
+	userInputPwd4 := "jwt-auth-services"
+	fmt.Println(utils.ComparePassword(encPwd, userInputPwd4))
+	// false
+
+	// serverAddr := "localhost:" + apiConfig.Port
+	// log.Fatal(http.ListenAndServe(serverAddr, nil))
 }
