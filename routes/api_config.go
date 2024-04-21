@@ -9,19 +9,9 @@ import (
 )
 
 type ApiConfig struct {
-	PostgresHost     string
-	PostgresPort     string
-	PostgresUser     string
-	PostgresPassword string
-	PostgresDB       string
-
-	DatabaseURL string
-
-	Port           string
-	ResourceOrigin string
-	ClientOrigin   string
-
-	RedisUrl string
+	DatabaseURL    string
+	RedisUrl       string
+	AuthServerPort string
 
 	AccessTokenKey       string
 	AccessTokenExpiresIn time.Duration

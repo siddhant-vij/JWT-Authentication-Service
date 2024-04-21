@@ -17,19 +17,9 @@ func LoadEnv(config *routes.ApiConfig) {
 		log.Fatal("Error loading .env file")
 	}
 
-	config.PostgresHost = os.Getenv("POSTGRES_HOST")
-	config.PostgresPort = os.Getenv("POSTGRES_PORT")
-	config.PostgresUser = os.Getenv("POSTGRES_USER")
-	config.PostgresPassword = os.Getenv("POSTGRES_PASSWORD")
-	config.PostgresDB = os.Getenv("POSTGRES_DB")
-
 	config.DatabaseURL = os.Getenv("DATABASE_URL")
-
-	config.Port = os.Getenv("PORT")
-	config.ResourceOrigin = os.Getenv("RESOURCE_ORIGIN")
-	config.ClientOrigin = os.Getenv("CLIENT_ORIGIN")
-
 	config.RedisUrl = os.Getenv("REDIS_URL")
+	config.AuthServerPort = os.Getenv("AUTH_SERVER_PORT")
 
 	config.AccessTokenKey = os.Getenv("ACCESS_TOKEN_KEY")
 	at_expiry_minutes, _ := strconv.Atoi(os.Getenv("ACCESS_TOKEN_EXPIRES_IN"))
