@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/siddhant-vij/JWT-Authentication-Service/controllers"
 	"github.com/siddhant-vij/JWT-Authentication-Service/utils"
@@ -27,7 +28,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	atCookie, err1 := r.Cookie("access_token")
 	rtCookie, err2 := r.Cookie("refresh_token")
-	if err1 != nil || err2 != nil {
+	if err1 != nil || err2 != nil || atCookie.Value == "" || rtCookie.Value == "" {
 		err = controllers.RegisterUser(user.Email, user.Password, apiConfig)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusBadRequest, err.Error())
@@ -53,6 +54,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Value:    apiConfig.Tokens[0].Token,
 		Path:     "/",
 		MaxAge:   apiConfig.AccessTokenMaxAge * 60,
+		Expires:  time.Now().Add(time.Duration(apiConfig.AccessTokenExpiresIn)),
 		Secure:   false,
 		HttpOnly: true,
 		Domain:   "localhost",
@@ -63,10 +65,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Value:    apiConfig.Tokens[1].Token,
 		Path:     "/",
 		MaxAge:   apiConfig.RefreshTokenMaxAge * 60,
+		Expires:  time.Now().Add(time.Duration(apiConfig.RefreshTokenExpiresIn)),
 		Secure:   false,
 		HttpOnly: true,
 		Domain:   "localhost",
 	})
+
+	utils.RespondWithJSON(w, http.StatusOK, apiConfig.Tokens)
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
@@ -91,5 +96,29 @@ func logout(w http.ResponseWriter, r *http.Request) {
 			utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 			return
 		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "access_token",
+			Value:    "",
+			Path:     "/",
+			MaxAge:   0,
+			Expires:  time.Unix(0, 0),
+			Secure:   false,
+			HttpOnly: true,
+			Domain:   "localhost",
+		})
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "refresh_token",
+			Value:    "",
+			Path:     "/",
+			MaxAge:   0,
+			Expires:  time.Unix(0, 0),
+			Secure:   false,
+			HttpOnly: true,
+			Domain:   "localhost",
+		})
+
+		utils.RespondWithJSON(w, http.StatusOK, apiConfig.Tokens)
 	}
 }

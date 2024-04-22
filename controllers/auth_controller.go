@@ -14,38 +14,57 @@ import (
 )
 
 func RegisterUser(email, password string, config *config.ApiConfig) error {
-	user, err := config.DBQueries.GetUserByEmail(context.TODO(), email)
+	user, errUser := config.DBQueries.GetUserByEmail(context.TODO(), email)
 
-	if err == nil && !utils.ComparePassword(user.PasswordHash, password) {
+	if errUser == nil && !utils.ComparePassword(user.PasswordHash, password) {
+		err := config.RedisClient.Del(context.TODO(), config.Tokens[1].TokenUuid).Err()
+		if err != nil {
+			return err
+		}
 		return errors.New("invalid password")
 	}
 
-	user_id := uuid.New()
+	var userId uuid.UUID
+	newUserId := uuid.New()
+	if user.ID == uuid.Nil {
+		userId = newUserId
+	} else {
+		userId = user.ID
+	}
+	curTime := time.Now()
 
-	if err != nil {
+	if errUser != nil {
 		var insertUserParams = database.InsertUserParams{
-			ID:           user_id,
-			CreatedAt:    time.Now(),
-			UpdatedAt:    time.Now(),
+			ID:           userId,
+			CreatedAt:    curTime,
+			UpdatedAt:    curTime,
 			Email:        email,
 			PasswordHash: utils.EncryptPassword(password),
 		}
-		_, err = config.DBQueries.InsertUser(context.TODO(), insertUserParams)
+		_, err := config.DBQueries.InsertUser(context.TODO(), insertUserParams)
 		if err != nil {
 			return err
 		}
 	}
 
-	atDetails, err := utils.CreateToken(user_id.String(), config.AccessTokenExpiresIn, config.AccessTokenKey)
+	atDetails, err := utils.CreateToken(userId.String(), config.AccessTokenExpiresIn, config.AccessTokenKey)
 	if err != nil {
 		return err
 	}
-	rtDetails, err := utils.CreateToken(user_id.String(), config.RefreshTokenExpiresIn, config.RefreshTokenKey)
+	rtDetails, err := utils.CreateToken(userId.String(), config.RefreshTokenExpiresIn, config.RefreshTokenKey)
 	if err != nil {
 		return err
 	}
 
-	config.Tokens = append(config.Tokens, atDetails, rtDetails)
+	if config.Tokens[1].TokenUuid != "" {
+		err := config.RedisClient.Del(context.TODO(), config.Tokens[1].TokenUuid).Err()
+		if err != nil {
+			return err
+		}
+	}	
+
+	config.Tokens[0] = atDetails
+	config.Tokens[1] = rtDetails
 
 	err = config.RedisClient.Set(context.TODO(), rtDetails.TokenUuid, rtDetails.UserID, time.Duration(rtDetails.ExpiresIn)*time.Second).Err()
 	if err != nil {
@@ -88,7 +107,7 @@ func LoginUser(config *config.ApiConfig, errList []error) error {
 		}
 		config.Tokens[1] = rtDetailsNew
 
-		if strings.Contains(errRt.Error(), "token has expired") || strings.Contains(errRt.Error(), "token string or public key cannot be empty") {
+		if !strings.Contains(errRt.Error(), "token has expired") {
 			err = config.RedisClient.Del(context.TODO(), rtDetails.TokenUuid).Err()
 			if err != nil {
 				return err
