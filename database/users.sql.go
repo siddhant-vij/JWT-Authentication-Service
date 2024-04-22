@@ -12,19 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
-const getUserByCredentials = `-- name: GetUserByCredentials :one
+const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, created_at, updated_at, email, password_hash FROM users
-WHERE email = $1 AND password_hash = $2
+WHERE email = $1
 LIMIT 1
 `
 
-type GetUserByCredentialsParams struct {
-	Email        string
-	PasswordHash string
-}
-
-func (q *Queries) GetUserByCredentials(ctx context.Context, arg GetUserByCredentialsParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByCredentials, arg.Email, arg.PasswordHash)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,

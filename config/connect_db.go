@@ -9,10 +9,9 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/siddhant-vij/JWT-Authentication-Service/database"
-	"github.com/siddhant-vij/JWT-Authentication-Service/routes"
 )
 
-func ConnectDB(config *routes.ApiConfig) {
+func ConnectDB(config *ApiConfig) {
 	upCommand := exec.Command("bash", "../scripts/up.sh")
 	err := upCommand.Run()
 	if err != nil {

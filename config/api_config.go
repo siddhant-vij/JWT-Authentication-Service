@@ -1,4 +1,4 @@
-package routes
+package config
 
 import (
 	"time"
@@ -6,6 +6,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/siddhant-vij/JWT-Authentication-Service/database"
+	"github.com/siddhant-vij/JWT-Authentication-Service/utils"
 )
 
 type ApiConfig struct {
@@ -23,4 +24,6 @@ type ApiConfig struct {
 
 	DBQueries   *database.Queries
 	RedisClient *redis.Client
+
+	Tokens  []utils.TokenDetails
 }

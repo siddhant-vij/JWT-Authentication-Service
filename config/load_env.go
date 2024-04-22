@@ -7,11 +7,9 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-
-	"github.com/siddhant-vij/JWT-Authentication-Service/routes"
 )
 
-func LoadEnv(config *routes.ApiConfig) {
+func LoadEnv(config *ApiConfig) {
 	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
