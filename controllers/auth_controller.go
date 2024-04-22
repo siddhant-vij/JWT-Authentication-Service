@@ -122,12 +122,8 @@ func LoginUser(config *config.ApiConfig, errList []error) error {
 	return nil
 }
 
-func LogoutUser(config *config.ApiConfig, errList []error) error {
+func LogoutUser(config *config.ApiConfig) error {
 	rtDetails := config.Tokens[1]
-	errRt := errList[1]
-	if errRt != nil {
-		return errRt
-	}
 	err := config.RedisClient.Del(context.TODO(), rtDetails.TokenUuid).Err()
 	if err != nil {
 		return err

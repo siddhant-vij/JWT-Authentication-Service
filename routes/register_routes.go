@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/siddhant-vij/JWT-Authentication-Service/config"
+	"github.com/siddhant-vij/JWT-Authentication-Service/middlewares"
 	"github.com/siddhant-vij/JWT-Authentication-Service/utils"
 )
 
@@ -21,7 +22,7 @@ func AuthServerPort() string {
 	return apiConfig.AuthServerPort
 }
 
-func RegisterRoutes() {
-	http.HandleFunc("/login", login)
-	http.HandleFunc("/logout", logout)
+func RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/login", login)
+	mux.Handle("/logout", middlewares.AuthMiddleware(http.HandlerFunc(logout)))
 }
