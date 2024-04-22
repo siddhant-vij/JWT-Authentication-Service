@@ -13,7 +13,7 @@ import (
 	"github.com/siddhant-vij/JWT-Authentication-Service/utils"
 )
 
-func RegisterUser(email, password string, config *config.ApiConfig) error {
+func RegisterUser(email, password string, isAdmin bool, config *config.ApiConfig) error {
 	user, errUser := config.DBQueries.GetUserByEmail(context.TODO(), email)
 
 	if errUser == nil && !utils.ComparePassword(user.PasswordHash, password) {
@@ -40,6 +40,7 @@ func RegisterUser(email, password string, config *config.ApiConfig) error {
 			UpdatedAt:    curTime,
 			Email:        email,
 			PasswordHash: utils.EncryptPassword(password),
+			IsAdmin:      isAdmin,
 		}
 		_, err := config.DBQueries.InsertUser(context.TODO(), insertUserParams)
 		if err != nil {
@@ -61,7 +62,7 @@ func RegisterUser(email, password string, config *config.ApiConfig) error {
 		if err != nil {
 			return err
 		}
-	}	
+	}
 
 	config.Tokens[0] = atDetails
 	config.Tokens[1] = rtDetails

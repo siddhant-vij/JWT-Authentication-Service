@@ -14,6 +14,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	type credentials struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		IsAdmin  bool   `json:"is_admin"`
 	}
 	user := credentials{}
 	err := decoder.Decode(&user)
@@ -29,7 +30,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	atCookie, err1 := r.Cookie("access_token")
 	rtCookie, err2 := r.Cookie("refresh_token")
 	if err1 != nil || err2 != nil || atCookie.Value == "" || rtCookie.Value == "" || controllers.IsRTRevoked(apiConfig) {
-		err = controllers.RegisterUser(user.Email, user.Password, apiConfig)
+		err = controllers.RegisterUser(user.Email, user.Password, user.IsAdmin, apiConfig)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusBadRequest, err.Error())
 			return

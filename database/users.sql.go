@@ -13,7 +13,7 @@ import (
 )
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, created_at, updated_at, email, password_hash FROM users
+SELECT id, created_at, updated_at, email, password_hash, is_admin FROM users
 WHERE email = $1
 LIMIT 1
 `
@@ -27,12 +27,13 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.UpdatedAt,
 		&i.Email,
 		&i.PasswordHash,
+		&i.IsAdmin,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, created_at, updated_at, email, password_hash FROM users
+SELECT id, created_at, updated_at, email, password_hash, is_admin FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -45,16 +46,17 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.UpdatedAt,
 		&i.Email,
 		&i.PasswordHash,
+		&i.IsAdmin,
 	)
 	return i, err
 }
 
 const insertUser = `-- name: InsertUser :one
 INSERT INTO users
-  (id, created_at, updated_at, email, password_hash)
+  (id, created_at, updated_at, email, password_hash, is_admin)
 VALUES
-  ($1, $2, $3, $4, $5)
-RETURNING id, created_at, updated_at, email, password_hash
+  ($1, $2, $3, $4, $5, $6)
+RETURNING id, created_at, updated_at, email, password_hash, is_admin
 `
 
 type InsertUserParams struct {
@@ -63,6 +65,7 @@ type InsertUserParams struct {
 	UpdatedAt    time.Time
 	Email        string
 	PasswordHash string
+	IsAdmin      bool
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, error) {
@@ -72,6 +75,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 		arg.UpdatedAt,
 		arg.Email,
 		arg.PasswordHash,
+		arg.IsAdmin,
 	)
 	var i User
 	err := row.Scan(
@@ -80,6 +84,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 		&i.UpdatedAt,
 		&i.Email,
 		&i.PasswordHash,
+		&i.IsAdmin,
 	)
 	return i, err
 }

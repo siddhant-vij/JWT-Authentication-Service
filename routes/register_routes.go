@@ -26,5 +26,5 @@ func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/login", login)
 	mux.Handle("/logout", middlewares.AuthMiddleware(http.HandlerFunc(logout)))
 	mux.HandleFunc("/verify", verify)
-	// mux.HandleFunc("/revoke", revoke)
+	mux.Handle("/revoke/{refresh_token}", middlewares.AuthAdmin(http.HandlerFunc(revoke)))
 }
