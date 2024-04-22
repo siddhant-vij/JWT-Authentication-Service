@@ -25,4 +25,6 @@ func AuthServerPort() string {
 func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/login", login)
 	mux.Handle("/logout", middlewares.AuthMiddleware(http.HandlerFunc(logout)))
+	mux.HandleFunc("/verify", verify)
+	// mux.HandleFunc("/revoke", revoke)
 }

@@ -28,7 +28,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	atCookie, err1 := r.Cookie("access_token")
 	rtCookie, err2 := r.Cookie("refresh_token")
-	if err1 != nil || err2 != nil || atCookie.Value == "" || rtCookie.Value == "" {
+	if err1 != nil || err2 != nil || atCookie.Value == "" || rtCookie.Value == "" || controllers.IsRTRevoked(apiConfig) {
 		err = controllers.RegisterUser(user.Email, user.Password, apiConfig)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusBadRequest, err.Error())
