@@ -1,18 +1,18 @@
 ## JWT Authentication Service
 
-Building the authentication service for the RSS Feed Aggregator project. It's a JWT-based authentication server which uses Redis (for Session Store), integrated with the backend API and the frontend UI which allows a user to:
-- Follow 5 RSS feeds by default (on successful login)
-- Follow and unfollow RSS feeds that other users have added
-- Fetch all of the latest posts from the RSS feeds they follow
+Building the authentication service for the YouTube Video Aggregator project. It's a JWT-based authentication server which uses Redis (for Session Store), integrated with the backend API and the frontend UI which allows a user to:
+- Follow 5 YouTube channels by default (on successful login)
+- Follow and unfollow channels that other users have added
+- Fetch all of the latest videos from the channels they follow
 
 <br>
 
-- [RSS Feed Aggregator](https://github.com/siddhant-vij/RSS-Feed-Aggregator) to fetch the latest posts from the RSS feeds.
-- [Dynamic Blog Generator](https://github.com/siddhant-vij/Dynamic-Blog-Generator) using Go's template engine to display the RSS feed posts.
+- [YouTube Video Aggregator](https://github.com/siddhant-vij/YouTube-Video-Aggregator) to fetch the latest videos from the YouTube channels.
+- [Dynamic Feed Generator](https://github.com/siddhant-vij/Dynamic-Feed-Generator) using Go's template engine to display the videos.
 
 <br>
 
-RSS feeds are a way for websites to publish updates to their content. You can use this project to keep up with your favorite blogs, news sites, podcasts, and more!
+RSS/Atom feeds are a way for websites to publish updates to their content. You can use this project to keep up with your favorite youtube channels!
 
 <br>
 
@@ -21,7 +21,7 @@ RSS feeds are a way for websites to publish updates to their content. You can us
 - The basics of database migrations
 - Long-running service workers
 - The complete overview of JWT authentication
-- Dynamic blog generator using the backend API
+- Dynamic feed generator using the backend API
 
 <br>
 
