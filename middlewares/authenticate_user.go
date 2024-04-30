@@ -7,16 +7,18 @@ import (
 	"os"
 
 	"github.com/google/uuid"
+	"github.com/siddhant-vij/JWT-Authentication-Service/config"
 	"github.com/siddhant-vij/JWT-Authentication-Service/database"
 	"github.com/siddhant-vij/JWT-Authentication-Service/utils"
 )
 
-func AuthMiddleware(next http.Handler) http.Handler {
+func AuthMiddleware(next http.Handler, config *config.ApiConfig) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rtCookie, _ := r.Cookie("refresh_token")
 
 		if rtCookie == nil {
-			utils.RespondWithError(w, http.StatusUnauthorized, "Only logged in users can access this route")
+			config.AuthStatus = "false: "
+			utils.RespondWithError(w, http.StatusBadRequest, config.GetAuthStatus() + "Only logged in users can access this route")
 			return
 		}
 
@@ -36,7 +38,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		_, err = dBQueries.GetUserByID(context.TODO(), uuid)
 		if err != nil {
-			utils.RespondWithError(w, http.StatusUnauthorized, "User belonging to this token no logger exists")
+			config.AuthStatus = "false: "
+			utils.RespondWithError(w, http.StatusBadRequest, config.GetAuthStatus() + "User belonging to this token no logger exists")
 			return
 		}
 

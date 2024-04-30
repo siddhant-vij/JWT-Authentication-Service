@@ -19,11 +19,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 	user := credentials{}
 	err := decoder.Decode(&user)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
+		apiConfig.AuthStatus = "false: "
+		utils.RespondWithError(w, http.StatusBadRequest, apiConfig.GetAuthStatus() + err.Error())
 		return
 	}
 	if user.Email == "" || user.Password == "" {
-		utils.RespondWithError(w, http.StatusBadRequest, "Please provide email and password")
+		apiConfig.AuthStatus = "false: "
+		utils.RespondWithError(w, http.StatusBadRequest, apiConfig.GetAuthStatus() + "invalid credentials")
 		return
 	}
 
@@ -32,7 +34,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if err1 != nil || err2 != nil || atCookie.Value == "" || rtCookie.Value == "" || controllers.IsRTRevoked(apiConfig) {
 		err = controllers.RegisterUser(user.Email, user.Password, user.IsAdmin, apiConfig)
 		if err != nil {
-			utils.RespondWithError(w, http.StatusBadRequest, err.Error())
+			apiConfig.AuthStatus = "false: "
+			utils.RespondWithError(w, http.StatusBadRequest, apiConfig.GetAuthStatus() + err.Error())
 			return
 		}
 	} else {
@@ -45,7 +48,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 		var errList []error = []error{errAt, errRt}
 		err = controllers.LoginUser(apiConfig, errList)
 		if err != nil {
-			utils.RespondWithError(w, http.StatusBadRequest, err.Error())
+			apiConfig.AuthStatus = "false: "
+			utils.RespondWithError(w, http.StatusBadRequest, apiConfig.GetAuthStatus() + err.Error())
 			return
 		}
 	}
@@ -72,18 +76,20 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Domain:   "localhost",
 	})
 
-	utils.RespondWithJSON(w, http.StatusOK, apiConfig.Tokens)
+	apiConfig.AuthStatus = "true"
+	utils.RespondWithJSON(w, http.StatusOK, apiConfig.GetAuthStatus())
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
 	rtCookie, err := r.Cookie("refresh_token")
 	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
+		apiConfig.AuthStatus = "false: "
+		utils.RespondWithError(w, http.StatusBadRequest, apiConfig.GetAuthStatus() + err.Error())
 		return
 	} else {
 		rtDetails, _ := utils.ValidateToken(rtCookie.Value, apiConfig.RefreshTokenKey)
 		apiConfig.Tokens[1] = rtDetails
-		err := controllers.LogoutUser(apiConfig)
+		controllers.LogoutUser(apiConfig)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:     "access_token",
@@ -107,10 +113,7 @@ func logout(w http.ResponseWriter, r *http.Request) {
 			Domain:   "localhost",
 		})
 
-		if err != nil {
-			utils.RespondWithError(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		utils.RespondWithJSON(w, http.StatusOK, apiConfig.Tokens)
+		apiConfig.AuthStatus = "false: "
+		utils.RespondWithJSON(w, http.StatusOK, apiConfig.GetAuthStatus() + "User logged out successfully")
 	}
 }

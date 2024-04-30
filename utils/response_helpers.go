@@ -10,17 +10,18 @@ func RespondWithError(w http.ResponseWriter, code int, msg string) {
 	if code > 499 {
 		log.Printf("Responding with 5XX error: %s", msg)
 	}
-	type errorResponse struct {
-		Error string `json:"error"`
-	}
-	RespondWithJSON(w, code, errorResponse{
-		Error: msg,
-	})
+	RespondWithJSON(w, code, msg)
 }
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	dat, err := json.Marshal(payload)
+
+	type authStatusResponse struct {
+		AuthStatus interface{} `json:"authStatus"`
+	}
+	dat, err := json.Marshal(authStatusResponse{
+		AuthStatus: payload,
+	})
 	if err != nil {
 		log.Printf("Error marshalling JSON: %s", err)
 		w.WriteHeader(500)

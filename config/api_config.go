@@ -25,5 +25,13 @@ type ApiConfig struct {
 	DBQueries   *database.Queries
 	RedisClient *redis.Client
 
-	Tokens  []utils.TokenDetails
+	Tokens []utils.TokenDetails
+
+	AuthStatus string
+	// true - for successful Authentication
+	// false - for unsuccessful Authentication
+}
+
+func (config *ApiConfig) GetAuthStatus() string {
+	return config.AuthStatus
 }
